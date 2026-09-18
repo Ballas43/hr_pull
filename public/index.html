@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Pull Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #ec4899;
+            --accent-hover: #db2777;
+            --success: #10b981;
+            --error: #ef4444;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --btn-sec-bg: rgba(255, 255, 255, 0.1);
+            --btn-sec-hover: rgba(255, 255, 255, 0.2);
+            --badge-bg: rgba(0, 0, 0, 0.2);
+            --gradient-1: rgba(236, 72, 153, 0.15);
+            --gradient-2: rgba(56, 189, 248, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --btn-sec-bg: rgba(0, 0, 0, 0.05);
+            --btn-sec-hover: rgba(0, 0, 0, 0.1);
+            --badge-bg: rgba(0, 0, 0, 0.05);
+            --gradient-1: rgba(236, 72, 153, 0.25);
+            --gradient-2: rgba(56, 189, 248, 0.25);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(at 0% 0%, var(--gradient-1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, var(--gradient-2) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .spawn-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .port-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 150px;
+        }
+
+        .port-helper {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            padding-left: 4px;
+            white-space: nowrap;
+        }
+
+        input {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            min-width: 200px;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button.danger {
+            background: transparent;
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        button.danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        button.secondary {
+            background: var(--btn-sec-bg);
+            color: var(--text-main);
+        }
+
+        button.secondary:hover {
+            background: var(--btn-sec-hover);
+        }
+
+        #themeToggle {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+        }
+
+        .card button {
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 15px;
+        }
+
+        .device-id {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .status.online {
+            color: var(--success);
+        }
+
+        .status.offline {
+            color: var(--error);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .online .status-dot {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .offline .status-dot {
+            background: var(--error);
+        }
+
+        .hr-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .heart {
+            font-size: 40px;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .bpm {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(to bottom, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bpm-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .detail-item {
+            background: var(--badge-bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .actions-bottom {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Toast for copy notifications */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes beat {
+            0% {
+                transform: scale(1);
+            }
+
+            15% {
+                transform: scale(1.15);
+            }
+
+            30% {
+                transform: scale(1);
+            }
+
+            45% {
+                transform: scale(1.15);
+            }
+
+            60% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            header>div:first-child {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+            .spawn-form {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+
+            .port-input-wrapper {
+                width: 100%;
+            }
+
+            input,
+            button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            #themeToggle {
+                width: 40px !important;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>HR Pull Dashboard</h1>
+                    <button onclick="toggleTheme()" class="secondary" id="themeToggle">☀️</button>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                    <div id="mainIpDisplay"
+                        style="font-size: 11px; font-weight: bold; color: var(--text-muted); background: var(--badge-bg); padding: 4px 10px; border-radius: 6px; width: fit-content; border: 1px solid var(--glass-border);">
+                        Main Server: Loading...</div>
+                    <div id="backupStatusDisplay"
+                        style="font-size: 11px; font-weight: bold; color: var(--text-muted); background: var(--badge-bg); padding: 4px 10px; border-radius: 6px; width: fit-content; border: 1px solid var(--glass-border);">
+                        Backup: Offline</div>
+                    <div id="multicastDisplay"
+                        style="font-size: 11px; font-weight: bold; color: var(--text-muted); background: var(--badge-bg); padding: 4px 10px; border-radius: 6px; width: fit-content; border: 1px solid var(--glass-border);">
+                        Multicast: 239.255.0.1</div>
+                </div>
+            </div>
+            <div class="spawn-form">
+                <input type="text" id="newDeviceId" placeholder="Enter Device ID (e.g. Player1)"
+                    onkeydown="if(event.key==='Enter') spawnDevice()">
+                <div class="port-input-wrapper">
+                    <input type="number" id="newDevicePort" placeholder="UDP Port (e.g. 9000)" min="9000" max="9050"
+                        onkeydown="if(event.key==='Enter') spawnDevice()">
+                    <div class="port-helper">Allowed: 9000-9050</div>
+                </div>
+                <button onclick="spawnDevice()">Spawn Receiver</button>
+            </div>
+        </header>
+
+        <div class="grid" id="receiversGrid">
+            <!-- Cards injected via JS -->
+        </div>
+    </div>
+
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Theme initialization
+        const themeToggleBtn = document.getElementById('themeToggle');
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggleBtn.innerText = theme === 'light' ? '🌙' : '☀️';
+        }
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'light' ? 'dark' : 'light');
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            setTheme('light');
+        }
+
+        // Use the current host for URLs
+        const API_BASE = window.location.origin;
+
+        let broadcastIp = '239.255.0.1';
+        let backupIp = null;
+
+        async function fetchNetworkConfig() {
+            try {
+                const res = await fetch('/api/network');
+                const data = await res.json();
+                broadcastIp = data.broadcastIp;
+                backupIp = data.backupIp;
+
+                document.getElementById('mainIpDisplay').innerText = `Main Server: ${data.mainIp || 'N/A'}`;
+                document.getElementById('multicastDisplay').innerText = `Multicast Group: ${broadcastIp}`;
+
+                const backupDisplay = document.getElementById('backupStatusDisplay');
+                if (backupIp) {
+                    backupDisplay.innerText = `Backup Server: ${backupIp}`;
+                    backupDisplay.style.color = 'var(--success)';
+                } else {
+                    backupDisplay.innerText = `Backup Server: Offline`;
+                    backupDisplay.style.color = 'var(--error)';
+                }
+            } catch (err) {
+                console.error("Error fetching network config", err);
+            }
+        }
+        setInterval(fetchNetworkConfig, 3000);
+        fetchNetworkConfig();
+
+        async function fetchDevices() {
+            try {
+                const res = await fetch('/api/devices');
+                const devices = await res.json();
+                renderGrid(devices);
+            } catch (err) {
+                console.error("Error fetching devices", err);
+            }
+        }
+
+        async function spawnDevice() {
+            const inputId = document.getElementById('newDeviceId');
+            const inputPort = document.getElementById('newDevicePort');
+            const id = inputId.value.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+            const port = inputPort.value.trim();
+            if (!id || !port) return;
+
+            const portNum = parseInt(port);
+            if (portNum < 9000 || portNum > 9050) {
+                alert("Please use a port between 9000 and 9050 (Allowed by firewall).");
+                return;
+            }
+
+            try {
+                await fetch('/api/devices', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, port })
+                });
+                inputId.value = '';
+                inputPort.value = '';
+                fetchDevices();
+            } catch (err) {
+                console.error("Error spawning device", err);
+            }
+        }
+
+        async function despawnDevice(id) {
+            if (!confirm(`Are you sure you want to despawn ${id}?`)) return;
+            try {
+                await fetch(`/api/devices/${id}`, { method: 'DELETE' });
+                fetchDevices();
+            } catch (err) {
+                console.error("Error despawning device", err);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            });
+        }
+
+        function renderGrid(devices) {
+            const grid = document.getElementById('receiversGrid');
+
+            if (devices.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px; background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--glass-border);">No receivers active. Spawn one above!</div>`;
+                return;
+            }
+
+            let html = '';
+            devices.forEach(device => {
+                const statusClass = device.connected ? 'online' : 'offline';
+                const statusText = device.connected ? 'ONLINE' : 'OFFLINE';
+
+                let animStyle = 'none';
+                if (device.connected && device.bpm > 0) {
+                    animStyle = `beat ${60 / device.bpm}s infinite`;
+                }
+
+                let timeStr = 'N/A';
+                if (device.timestamp) {
+                    const date = new Date(device.timestamp);
+                    timeStr = date.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+
+                const percentDisplay = device.percent ? (device.percent * 100).toFixed(1) + '%' : 'N/A';
+
+                const rawJsonUrl = `${API_BASE}/api/bpm/${device.id}`;
+
+                html += `
+                    <div class="card" id="card-${device.id}">
+                        <div class="card-header">
+                            <div class="device-id">${device.id}</div>
+                            <div class="status ${statusClass}">
+                                <div class="status-dot"></div>
+                                ${statusText}
+                            </div>
+                        </div>
+                        
+                        <div class="hr-display">
+                            <div class="heart" style="animation: ${animStyle}">❤️</div>
+                            <div>
+                                <div class="bpm">${device.bpm}</div>
+                                <div class="bpm-label">BPM</div>
+                            </div>
+                        </div>
+
+                        <div class="details">
+                            <div class="detail-item" title="Percent"><strong>Int:</strong> ${percentDisplay}</div>
+                            <div class="detail-item" title="Timestamp"><strong>Last:</strong> ${timeStr}</div>
+                            <div class="detail-item" style="grid-column: 1/-1; text-align: center; color: var(--accent);"><strong>Listening on UDP: ${device.port}</strong></div>
+                        </div>
+
+                        <div class="actions">
+                            <button class="secondary" title="Copy Device Push URL" onclick="copyToClipboard('${broadcastIp}:${device.port}')">Push URL</button>
+                            <button class="secondary" title="Copy Raw API JSON" onclick="copyToClipboard('${rawJsonUrl}')">Raw JSON</button>
+                        </div>
+                        ${backupIp ? `<button class="secondary" style="margin-top: 10px; width: 100%; box-sizing: border-box; background: rgba(16, 185, 129, 0.15); color: var(--success);" title="Copy Backup API JSON" onclick="copyToClipboard('http://${backupIp}:3000/api/bpm/${device.id}')">Backup Raw JSON</button>` : ''}
+                        <div class="actions-bottom" style="display:flex; gap:10px; margin-top: 10px;">
+                             <button class="danger" style="flex: 1;" onclick="despawnDevice('${device.id}')">Despawn</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        setInterval(fetchDevices, 1000);
+        fetchDevices();
+    </script>
+</body>
+
+</html>
