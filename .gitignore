@@ -3,3 +3,4 @@ devices.json
 .DS_Store
 .env
 .kilo
+.gitignore
