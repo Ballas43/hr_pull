@@ -15,6 +15,7 @@ Most importantly, it features a **Peer-to-Peer Failover** architecture. By using
 
 - **Dynamic OSC Listeners:** Spawn and despawn listeners on the fly from the web UI.
 - **Glassmorphism Dashboard:** A modern, responsive web UI with Dark/Light modes synced to your OS.
+- **Ready-to-use OBS Overlay:** Includes a built-in, transparent HTML widget with an animated heartbeat synced perfectly to the live BPM data.
 - **Multicast Syncing:** Bypasses aggressive router firewalls by multicasting state to `239.255.0.1`.
 - **Peer-to-Peer Backup:** A lightweight `backup.js` script that echoes the heartbeat if the main server goes offline.
 - **State Persistence:** Automatically saves your active device listeners to disk, surviving server restarts.
@@ -22,7 +23,7 @@ Most importantly, it features a **Peer-to-Peer Failover** architecture. By using
 ## Installation
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Ballas43/hr_pull.git
 cd hr-pull
 npm install
 ```
