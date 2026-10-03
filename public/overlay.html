@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HR Overlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: transparent;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            user-select: none;
+        }
+        .heart {
+            font-size: 3.5rem;
+            color: #ff3366;
+            filter: drop-shadow(0 0 15px rgba(255, 51, 102, 0.8));
+            animation: beat 1s infinite;
+        }
+        .bpm-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1;
+        }
+        .bpm-value {
+            font-size: 4.5rem;
+            font-weight: 800;
+        }
+        .bpm-label {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+        .offline {
+            color: #475569;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+            animation: none !important;
+        }
+
+        @keyframes beat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.15); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart" id="heart">❤️</div>
+    <div class="bpm-container">
+        <div class="bpm-value" id="bpm">--</div>
+        <div class="bpm-label">BPM</div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('id');
+        
+        if (!deviceId) {
+            document.getElementById('bpm').innerText = "ERR";
+            document.getElementById('bpm').style.fontSize = "2rem";
+            document.querySelector('.bpm-label').innerText = "No ?id= provided";
+            document.getElementById('heart').classList.add('offline');
+        } else {
+            setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/bpm/${deviceId}`);
+                    if (!res.ok) throw new Error("Offline");
+                    
+                    const data = await res.json();
+                    const device = data[0]; // Data is wrapped in an array
+
+                    if (device && device.connected) {
+                        document.getElementById('bpm').innerText = device.bpm;
+                        document.getElementById('heart').classList.remove('offline');
+                        
+                        // Dynamically adjust heart beat animation speed to match BPM
+                        if (device.bpm > 0) {
+                            const bps = device.bpm / 60;
+                            const duration = 1 / bps;
+                            document.getElementById('heart').style.animationDuration = `${duration}s`;
+                        } else {
+                            document.getElementById('heart').style.animationDuration = `1s`;
+                        }
+                    } else {
+                        throw new Error("Disconnected");
+                    }
+                } catch (e) {
+                    document.getElementById('bpm').innerText = "--";
+                    document.getElementById('heart').classList.add('offline');
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

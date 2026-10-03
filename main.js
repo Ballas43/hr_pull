@@ -193,7 +193,7 @@ app.delete('/api/devices/:id', (req, res) => {
 app.get('/api/bpm/:id', (req, res) => {
     const { id } = req.params;
     if (devices[id]) {
-        res.json(devices[id]);
+        res.json([devices[id]]);
     } else {
         res.status(404).json({ error: 'Device not found' });
     }

@@ -602,6 +602,7 @@
                             <button class="secondary" title="Copy Device Push URL" onclick="copyToClipboard('${broadcastIp}:${device.port}')">Push URL</button>
                             <button class="secondary" title="Copy Raw API JSON" onclick="copyToClipboard('${rawJsonUrl}')">Raw JSON</button>
                         </div>
+                        <button class="secondary" style="margin-top: 10px; width: 100%; box-sizing: border-box;" title="Copy OBS Browser Source URL" onclick="copyToClipboard('${API_BASE}/overlay.html?id=${device.id}')">Copy OBS Overlay URL</button>
                         ${backupIp ? `<button class="secondary" style="margin-top: 10px; width: 100%; box-sizing: border-box; background: rgba(16, 185, 129, 0.15); color: var(--success);" title="Copy Backup API JSON" onclick="copyToClipboard('http://${backupIp}:3000/api/bpm/${device.id}')">Backup Raw JSON</button>` : ''}
                         <div class="actions-bottom" style="display:flex; gap:10px; margin-top: 10px;">
                              <button class="danger" style="flex: 1;" onclick="despawnDevice('${device.id}')">Despawn</button>
